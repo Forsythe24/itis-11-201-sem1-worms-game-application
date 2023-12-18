@@ -3,12 +3,18 @@ package worms.gui.view;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.StackPane;
 import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import worms.gui.handler.ClientInputHandler;
@@ -18,16 +24,16 @@ import worms.net.Server;
 
 import java.io.IOException;
 import java.net.ConnectException;
+import java.util.Stack;
 
 public class UserConfigView extends BaseView{
-    private AnchorPane pane;
+    private StackPane pane;
     private VBox box;
     private TextField host;
     private TextField port;
     private TextField username;
     private Button start;
-
-    private Client client;
+    private Canvas canvas;
 
     final EventHandler<ActionEvent> eventHandler = new EventHandler<>() {
         @Override
@@ -38,7 +44,6 @@ public class UserConfigView extends BaseView{
                 userConfig.setUsername(username.getText());
                 int portNumber = Integer.parseInt(port.getText());
                 userConfig.setPort(portNumber);
-
 
                 getWormsApplication().setUserConfig(userConfig);
 
@@ -55,50 +60,55 @@ public class UserConfigView extends BaseView{
         return pane;
     }
 
-//    public void startGame(final String ipAddress, final int port) {
-//        System.out.println("Starting game.");
-//        try {
-//            client = new Client(ipAddress, port);
-//        } catch (final ConnectException e) {
-//            System.out.println("Connection refused.");
-//            return;
-//        } catch (final IOException e) {
-//            e.printStackTrace();
-//        }
-//
-//        GameView grid = new GameView(1,1, client.getGame());
-//        grid.setPadding(new Insets(20));
-//        Scene scene = new Scene(grid, 400, 400);
-//
-//        ClientInputHandler cil = new ClientInputHandler(client.getGame(), scene);
-//
-//
-//        Stage stage = new Stage();
-//        stage.setScene(scene);
-//        stage.show();
-//
-//
-//        grid.requestFocus();
-//
-//        client.run();
-//    }
-
     private void createView() {
-        pane = new AnchorPane();
+        pane = new StackPane();
+
+        canvas = new Canvas();
+
+        canvas.setWidth(400);
+        canvas.setHeight(150);
+
+
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        Image logoImage = new Image("worms-logo.png");
+
+        gc.drawImage(logoImage,50, 0, 300, 80);
 
         box = new VBox(10);
 
-        Label usernameLabel = new Label("username");
+        box.setMaxWidth(800);
+        box.setMaxHeight(800);
+
+        box.setPadding(new Insets(60));
+
+        Label usernameLabel = new Label("Username");
         username = new TextField();
-        Label hostLabel = new Label("host");
+        username.setPrefHeight(30);
+
+        Label hostLabel = new Label("Host");
         host = new TextField();
         host.setText("127.0.0.1");
-        Label portLabel = new Label("port");
+        host.setPrefHeight(30);
+
+        Label portLabel = new Label("Port");
         port = new TextField();
         port.setText("" + Server.DEFAULT_PORT_NUMBER);
+        port.setPrefHeight(30);
+
         start = new Button("Join Game");
         start.setOnAction(eventHandler);
+
         box.getChildren().addAll(usernameLabel, username, hostLabel, host, portLabel, port, start);
-        pane.getChildren().addAll(box);
+
+        StackPane.setAlignment(canvas, Pos.TOP_CENTER);
+        StackPane.setAlignment(start, Pos.CENTER);
+        StackPane.setAlignment(box, Pos.CENTER);
+
+        StackPane.setMargin(canvas, new Insets(10));
+        StackPane.setMargin(box, new Insets(10));
+
+
+        pane.getChildren().addAll(box, canvas);
     }
 }

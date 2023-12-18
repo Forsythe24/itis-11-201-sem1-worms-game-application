@@ -1,8 +1,11 @@
 package worms.game;
 
 import javafx.application.Application;
+import javafx.fxml.FXMLLoader;
 import javafx.geometry.Insets;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
 import worms.gui.handler.ClientInputHandler;
@@ -11,6 +14,7 @@ import worms.gui.model.UserConfig;
 import worms.gui.view.*;
 import worms.net.Client;
 
+import java.awt.*;
 import java.io.IOException;
 import java.net.ConnectException;
 
@@ -42,6 +46,11 @@ public class WormsApplication extends Application {
 
         root = new BorderPane();
         scene = new Scene(root, 400, 300);
+
+        scene.getStylesheets().add(WormsApplication.class.getResource("/worms.css").toExternalForm());
+
+
+
         primaryStage.setScene(scene);
         primaryStage.show();
         setView(userConfigView);
