@@ -1,24 +1,23 @@
 package worms.gui.view;
 
 import javafx.animation.AnimationTimer;
+import javafx.scene.Parent;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.image.Image;
-import javafx.scene.layout.Region;
 import worms.game.ClientGame;
 import worms.game.ServerGame;
 import worms.game.entities.platform.PlatformEntity;
 import worms.game.entities.player.PlayerEntity;
 import worms.game.entities.player.TeamedPlayerEntity;
-import worms.game.entities.projectile.BulletEntity;
-import worms.game.entities.projectile.CannonballCollisionEntity;
-import worms.game.entities.projectile.CannonballEntity;
+import worms.game.entities.projectile.*;
 import worms.game.entities.weapon.CannonEntity;
+import worms.game.entities.weapon.MolotovCocktailEntity;
 import worms.game.entities.weapon.PistolEntity;
 import worms.game.entities.weapon.WeaponEntity;
 
 
-public class GameView extends Region {
+public class GameView extends BaseView {
     private final double[][] gameViewRanges = new double[][] { { 0, 10 }, { 0, 10 } }; // {xRange, yRange}
     private final ClientGame game;
     private final Sprites sprites = new Sprites();
@@ -27,7 +26,6 @@ public class GameView extends Region {
     private final int numColumns ;
     private final int numRows ;
     private GraphicsContext gc;
-
 
     public GameView(int numColumns, int numRows, ClientGame game) {
         this.game = game;
@@ -41,14 +39,13 @@ public class GameView extends Region {
         AnimationTimer timer = new AnimationTimer() {
             @Override
             public void handle(long now) {
-                layoutChildren();
+                setUpCanvas();
             }
         };
         timer.start();
     }
 
-    @Override
-    protected void layoutChildren() {
+    private void setUpCanvas() {
         double w = getWidth();
         double h = getHeight() ;
 
@@ -57,8 +54,7 @@ public class GameView extends Region {
 
         gc = canvas.getGraphicsContext2D();
         gc.clearRect(0, 0, w, h);
-        
-        
+
 
         gc.drawImage(sprites.backgroundSprite, 0, 0, w, h);
 
@@ -66,6 +62,7 @@ public class GameView extends Region {
         for (ServerGame.Entity entity : game.getEntities().values()) {
             drawEntitySprite(entity);
         }
+
     }
 
     private void drawEntitySprite(ServerGame.Entity entity) {
@@ -108,12 +105,19 @@ public class GameView extends Region {
                     case RIGHT -> sprites.rightPistolSprite;
                 };
             } else if (entity instanceof  CannonEntity cannonEntity) {
-                // if-statement is now redundant, but in the future, when more weaponry is added, it will come in handy
                 sprite = switch (cannonEntity.getHorDirection()) {
                     case LEFT -> sprites.leftCannonSprite;
                     case RIGHT -> sprites.rightCannonSprite;
                 };
-            } else {
+            } else if (entity instanceof MolotovCocktailEntity molotovCocktailEntity) {
+                // if-statement is now redundant, but in the future, when more weaponry is added, it will come in handy
+                sprite = switch (molotovCocktailEntity.getHorDirection()) {
+                    case LEFT -> sprites.leftMolotovCocktailSprite;
+                    case RIGHT -> sprites.rightMolotovCocktail;
+                };
+            }
+
+            else {
                 throw new IllegalArgumentException("Entity of unknown type");
             }
 
@@ -126,14 +130,22 @@ public class GameView extends Region {
 
             sprite = sprites.cannonBallSprite;
 
-        } else if (entity instanceof PlatformEntity) {
+        } else if (entity instanceof LaunchedMolotovCocktailEntity launchedMolotovCocktailEntity) {
+            sprite = switch (launchedMolotovCocktailEntity.getHorDirection()) {
+                case LEFT -> sprites.leftMolotovCocktailSprite;
+                case RIGHT -> sprites.rightMolotovCocktail;
+            };
+
+        }
+        else if (entity instanceof PlatformEntity) {
 
             sprite = sprites.grassBlockSprite;
 
         } else if (entity instanceof CannonballCollisionEntity) {
             sprite = sprites.cannonBallCollisionSprite;
+        } else if (entity instanceof FireEntity) {
+            sprite = sprites.fireSprite;
         }
-
         else {
             throw new IllegalArgumentException("Entity of unknown type");
         }
@@ -150,6 +162,10 @@ public class GameView extends Region {
         return 20 * numRows ;
     }
 
+    @Override
+    public Parent getView() {
+        return null;
+    }
 
     private static class Sprites {
         private final Image rightPlayerSprite;
@@ -170,6 +186,12 @@ public class GameView extends Region {
         private final Image backgroundSprite;
 
         private final Image cannonBallCollisionSprite;
+
+        private final Image leftMolotovCocktailSprite;
+
+        private final Image rightMolotovCocktail;
+        
+        private final Image fireSprite;
 
         private Sprites() {
             rightPlayerSprite = new Image("right-facing-radioactive-worm.png");
@@ -194,16 +216,22 @@ public class GameView extends Region {
             backgroundSprite = new Image("christmas-background.png");
 
             cannonBallCollisionSprite = new Image("explosion.png");
+
+            leftMolotovCocktailSprite = new Image("left-facing-molotov-cocktail.png");
+
+            rightMolotovCocktail = new Image("right-facing-molotov-cocktail.png");
+
+            fireSprite = new Image("fire.png");
         }
     }
 
 
 
-    private int remapXCoords( double gameX) {
+    private int remapXCoords(double gameX) {
         return remap(gameX, gameViewRanges[0][0], gameViewRanges[0][1], 0, getWidth());
     }
 
-    private int remapYCoords( double gameY) {
+    private int remapYCoords(double gameY) {
         return remap(gameY, gameViewRanges[1][0], gameViewRanges[1][1], getHeight(), 0);
     }
 

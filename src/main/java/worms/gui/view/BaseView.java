@@ -1,9 +1,10 @@
 package worms.gui.view;
 
 import javafx.scene.Parent;
+import javafx.scene.layout.Region;
 import worms.game.WormsApplication;
 
-public abstract class BaseView {
+public abstract class BaseView extends Region {
 
     private static WormsApplication wormsApplication;
 
@@ -14,9 +15,10 @@ public abstract class BaseView {
         throw new RuntimeException("No app in base view");
     }
 
-    public static void setHeadBallApplication(WormsApplication wormsApplication) {
+    public static void setWormsApplication(WormsApplication wormsApplication) {
         BaseView.wormsApplication = wormsApplication;
     }
 
     public abstract Parent getView();
+
 }

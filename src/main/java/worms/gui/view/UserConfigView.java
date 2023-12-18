@@ -42,7 +42,7 @@ public class UserConfigView extends BaseView{
 
                 getWormsApplication().setUserConfig(userConfig);
 
-                startGame(host.getText(), portNumber);
+                getWormsApplication().startGame(host.getText(), portNumber);
             }
         }
     };
@@ -55,33 +55,33 @@ public class UserConfigView extends BaseView{
         return pane;
     }
 
-    public void startGame(final String ipAddress, final int port) {
-        System.out.println("Starting game.");
-        try {
-            client = new Client(ipAddress, port);
-        } catch (final ConnectException e) {
-            System.out.println("Connection refused.");
-            return;
-        } catch (final IOException e) {
-            e.printStackTrace();
-        }
-
-        GameView grid = new GameView(1,1, client.getGame());
-        grid.setPadding(new Insets(20));
-        Scene scene = new Scene(grid, 400, 400);
-
-        ClientInputHandler cil = new ClientInputHandler(client.getGame(), scene);
-
-
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.show();
-
-
-        grid.requestFocus();
-
-        client.run();
-    }
+//    public void startGame(final String ipAddress, final int port) {
+//        System.out.println("Starting game.");
+//        try {
+//            client = new Client(ipAddress, port);
+//        } catch (final ConnectException e) {
+//            System.out.println("Connection refused.");
+//            return;
+//        } catch (final IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//        GameView grid = new GameView(1,1, client.getGame());
+//        grid.setPadding(new Insets(20));
+//        Scene scene = new Scene(grid, 400, 400);
+//
+//        ClientInputHandler cil = new ClientInputHandler(client.getGame(), scene);
+//
+//
+//        Stage stage = new Stage();
+//        stage.setScene(scene);
+//        stage.show();
+//
+//
+//        grid.requestFocus();
+//
+//        client.run();
+//    }
 
     private void createView() {
         pane = new AnchorPane();

@@ -121,7 +121,7 @@ public class ServerGame {
                     && this != otherEntity;
         }
 
-        public Vector2D getCollisionNormal( Entity otherEntity) {
+        public Vector2D getCollisionNormal(Entity otherEntity) {
              double xOverlap = Math.min(this.getX() + this.getWidth(), otherEntity.getX() + otherEntity.getWidth())
                     - Math.max(this.getX(), otherEntity.getX());
              double yOverlap = Math.min(this.getY() + this.getHeight(),
@@ -144,12 +144,15 @@ public class ServerGame {
 
         public static final double WALK_SPEED = 0.125;
         public static final double JUMP_VEL = 0.5;
-
+        public static final double FLIGHT_VEL = 0.5;
         public static final double BULLET_SPEED = 0.25;
         public static final int BULLET_LIFESPAN = 20;
         public static final double CANNONBALL_SPEED = 0.15;
+        public static final double MOLOTOV_COCKTAIL_SPEED = 0.15;
         public static final int CANNONBALL_LIFESPAN = 60;
+        public static final int MOLOTOV_COCKTAIL_LIFESPAN = 60;
         public static final int CANNONBALL_COLLISION_LIFESPAN = 1;
+        public static final int FIRE_LIFESPAN = 30;
     }
 
     private static final Logger logger = Logger.getLogger("Server");
@@ -182,7 +185,7 @@ public class ServerGame {
     public void tick() {
         //to avoid concurrent modification exceptions
          TreeMap<Integer, Entity> entitiesCopy = new TreeMap<>(entities);
-        for ( Entity entity : entitiesCopy.values()) {
+        for (Entity entity : entitiesCopy.values()) {
             entity.tick();
         }
 
@@ -220,7 +223,7 @@ public class ServerGame {
         }
     }
 
-    public void addEntity( Entity entity) {
+    public void addEntity(Entity entity) {
         entities.put(entity.getId(), entity);
     }
 }

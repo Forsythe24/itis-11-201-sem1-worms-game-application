@@ -33,7 +33,7 @@ public class ServerTeamGame extends ServerGame {
     }
 
     @Override
-    public void removeEntity( int id) {
+    public void removeEntity(int id) {
         if (getEntities().get(id) instanceof  TeamedPlayerEntity teamedPlayerEntity) {
             if (teamedPlayerEntity.getTeam() == TeamedPlayerEntity.Team.RED) {
                 redTeamPlayers.remove(teamedPlayerEntity);

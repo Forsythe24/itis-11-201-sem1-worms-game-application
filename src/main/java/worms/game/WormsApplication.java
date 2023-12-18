@@ -1,15 +1,18 @@
 package worms.game;
 
 import javafx.application.Application;
+import javafx.geometry.Insets;
 import javafx.scene.Scene;
 import javafx.scene.layout.BorderPane;
 import javafx.stage.Stage;
+import worms.gui.handler.ClientInputHandler;
 import worms.gui.model.ServerConfig;
 import worms.gui.model.UserConfig;
-import worms.gui.view.BaseView;
-import worms.gui.view.ServerConfigView;
-import worms.gui.view.ServerRunningView;
-import worms.gui.view.UserConfigView;
+import worms.gui.view.*;
+import worms.net.Client;
+
+import java.io.IOException;
+import java.net.ConnectException;
 
 public class WormsApplication extends Application {
 
@@ -23,16 +26,22 @@ public class WormsApplication extends Application {
 
     private ServerRunningView serverRunningView;
 
+    private GameView gameView;
+
+    private Client client;
+
+    private Scene scene;
+
     @Override
     public void start(Stage primaryStage) throws Exception {
-        primaryStage.setTitle("Head Ball");
+        primaryStage.setTitle("Worms");
         primaryStage.setOnCloseRequest(e -> System.exit(0));
-        BaseView.setHeadBallApplication(this);
+        BaseView.setWormsApplication(this);
 
         userConfigView = new UserConfigView();
 
         root = new BorderPane();
-        Scene scene = new Scene(root, 400, 300);
+        scene = new Scene(root, 400, 300);
         primaryStage.setScene(scene);
         primaryStage.show();
         setView(userConfigView);
@@ -80,8 +89,39 @@ public class WormsApplication extends Application {
         this.serverRunningView = serverRunningView;
     }
 
+    public GameView getGameView() {
+        return gameView;
+    }
+
+    public void setGameView(GameView gameView) {
+        this.gameView = gameView;
+    }
+
     public void setView(BaseView view) {
         root.setCenter(view.getView());
+    }
+
+    public void startGame(final String ipAddress, final int port) {
+        System.out.println("Starting game.");
+        try {
+            client = new Client(ipAddress, port);
+        } catch (final ConnectException e) {
+            System.out.println("Connection refused.");
+            return;
+        } catch (final IOException e) {
+            e.printStackTrace();
+        }
+
+        gameView = new GameView(1,1, client.getGame());
+        gameView.setPadding(new Insets(20));
+
+        root.setCenter(gameView);
+
+        ClientInputHandler cil = new ClientInputHandler(client.getGame(), scene);
+
+        gameView.requestFocus();
+
+        client.run();
     }
 
 }

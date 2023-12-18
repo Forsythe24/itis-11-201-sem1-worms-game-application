@@ -1,6 +1,7 @@
 package worms.game.entities.player;
 
 import worms.game.ServerGame;
+import worms.game.entities.projectile.FireEntity;
 import worms.game.entities.projectile.ProjectileEntity;
 
 public class TeamedPlayerEntity extends PlayerEntity {
@@ -30,7 +31,6 @@ public class TeamedPlayerEntity extends PlayerEntity {
                 }
             }
         }
-
         super.handleCollision(otherEntity);
     }
 }

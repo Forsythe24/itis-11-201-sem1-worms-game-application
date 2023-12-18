@@ -6,14 +6,14 @@ import worms.game.entities.axistype.XAxisType;
 import worms.game.entities.axistype.YAxisType;
 import worms.game.entities.physics.HorDirectionedEntity;
 import worms.game.entities.player.PlayerEntity;
-import worms.game.entities.projectile.CannonballEntity;
+import worms.game.entities.projectile.LaunchedMolotovCocktailEntity;
 
-public class CannonEntity extends WeaponEntity {
+public class MolotovCocktailEntity extends WeaponEntity {
     private final PlayerEntity owner;
 
 
-    public CannonEntity( PlayerEntity owner) {
-        super(owner.getGame(), 2. / 3., 2. / 3., Double.NaN, Double.NaN);
+    public MolotovCocktailEntity(PlayerEntity owner) {
+        super(owner.getGame(), 1. / 3., 1. / 3., Double.NaN, Double.NaN);
 
         this.owner = owner;
     }
@@ -33,8 +33,8 @@ public class CannonEntity extends WeaponEntity {
 
     @Override
     public double getY() {
-        
-        return owner.getBottomY() - 0.1;
+
+        return owner.getBottomY() + 0.1;
     }
 
     @Override
@@ -53,15 +53,15 @@ public class CannonEntity extends WeaponEntity {
     @Override
     public void release() {
         if (this.getHorDirection() == HorDirectionedEntity.HorDirection.LEFT) {
-            (new CannonballEntity(getGame(), owner, this.getLeftX(), getTopY(),
-                    -ServerGame.GameSettings.CANNONBALL_SPEED,
+            (new LaunchedMolotovCocktailEntity(getGame(), owner, this.getLeftX(), getTopY(),
+                    -ServerGame.GameSettings.MOLOTOV_COCKTAIL_SPEED,
                     XAxisType.LEFT, YAxisType.TOP))
                     .shiftYVel(ServerGame.GameSettings.FLIGHT_VEL);
 
 
         } else if (this.getHorDirection() == HorDirectionedEntity.HorDirection.RIGHT) {
-            new CannonballEntity(getGame(), owner, this.getRightX(), getTopY(),
-                    ServerGame.GameSettings.CANNONBALL_SPEED,
+            new LaunchedMolotovCocktailEntity(getGame(), owner, this.getRightX(), getTopY(),
+                    ServerGame.GameSettings.MOLOTOV_COCKTAIL_SPEED,
                     XAxisType.RIGHT, YAxisType.TOP)
                     .shiftYVel(ServerGame.GameSettings.FLIGHT_VEL);
         } else {

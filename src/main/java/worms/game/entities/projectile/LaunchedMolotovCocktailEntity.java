@@ -6,20 +6,23 @@ import worms.game.entities.axistype.XAxisType;
 import worms.game.entities.axistype.YAxisType;
 import worms.game.entities.physics.GravitationalEntity;
 import worms.game.entities.physics.HorDirectionedEntity;
+import worms.game.entities.physics.Vector2D;
+import worms.game.entities.platform.PlatformEntity;
 import worms.game.entities.player.PlayerEntity;
+import worms.game.entities.player.TeamedPlayerEntity;
 
-public class CannonballEntity extends ProjectileEntity implements GravitationalEntity {
+public class LaunchedMolotovCocktailEntity extends ProjectileEntity implements GravitationalEntity {
     private final PlayerEntity shooter;
     private int age;
     private final double horVel;
     private double xVel, yVel;
 
 
-    public CannonballEntity(ServerGame game, PlayerEntity shooter, double x, double y,
-                            double horVel,
-                            XAxisType xAxisType,
-                            YAxisType yAxisType) {
-        super(game, 1. / 4., 1. / 4., x, y);
+    public LaunchedMolotovCocktailEntity(ServerGame game, PlayerEntity shooter, double x, double y,
+                                         double horVel,
+                                         XAxisType xAxisType,
+                                         YAxisType yAxisType) {
+        super(game, 1. / 3., 1. / 3., x, y);
 
         this.shooter = shooter;
 
@@ -51,7 +54,7 @@ public class CannonballEntity extends ProjectileEntity implements GravitationalE
 
     @Override
     public void tick() {
-        if (age >= ServerGame.GameSettings.CANNONBALL_LIFESPAN) {
+        if (age >= ServerGame.GameSettings.MOLOTOV_COCKTAIL_LIFESPAN) {
             getGame().removeEntity(getId());
             return;
         }
@@ -66,8 +69,12 @@ public class CannonballEntity extends ProjectileEntity implements GravitationalE
 
     @Override
     public void handleCollision(ServerGame.Entity otherEntity) {
-        getGame().addEntity(new CannonballCollisionEntity(getGame(), getX(), getY()));
-        getGame().removeEntity(getId());
+        if (otherEntity instanceof PlatformEntity ||
+                otherEntity instanceof TeamedPlayerEntity playerEntity &&
+                        playerEntity.getTeam() != ((TeamedPlayerEntity) shooter).getTeam()) {
+            getGame().addEntity(new FireEntity(getGame(), getX(), getY()));
+            getGame().removeEntity(getId());
+        }
     }
 
     @Override

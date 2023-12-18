@@ -28,7 +28,6 @@ public class BulletEntity extends ProjectileEntity {
                 setX(x - this.getWidth());
                 break;
             case CENTER:
-                // idk
                 break;
         }
 
@@ -40,7 +39,6 @@ public class BulletEntity extends ProjectileEntity {
                 setY(y - this.getHeight());
                 break;
             case CENTER:
-                // idk
                 break;
         }
 

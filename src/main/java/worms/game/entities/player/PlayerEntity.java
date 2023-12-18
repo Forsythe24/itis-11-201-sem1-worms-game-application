@@ -7,8 +7,10 @@ import worms.game.entities.platform.PlatformEntity;
 import worms.game.entities.physics.Vector2D;
 import worms.game.entities.physics.GravitationalEntity;
 import worms.game.entities.physics.HorDirectionedEntity;
+import worms.game.entities.projectile.FireEntity;
 import worms.game.entities.projectile.ProjectileEntity;
 import worms.game.entities.weapon.CannonEntity;
+import worms.game.entities.weapon.MolotovCocktailEntity;
 import worms.game.entities.weapon.PistolEntity;
 import worms.game.entities.weapon.WeaponEntity;
 
@@ -63,7 +65,7 @@ public class PlayerEntity extends ServerGame.Entity implements HorDirectionedEnt
 
     @Override
     public void tick() {
-        for ( Action action : getActionSet().getInstantActions()) {
+        for (Action action : getActionSet().getInstantActions()) {
             switch (action) {
                 case JUMP -> {
                     if (getYVel() != 0) {
@@ -84,21 +86,15 @@ public class PlayerEntity extends ServerGame.Entity implements HorDirectionedEnt
 
         for ( Action action : getActionSet().getLongActions()) {
             switch (action) {
-                case LEFT_WALK: {
+                case LEFT_WALK -> {
                     setHorDirection(HorDirection.LEFT);
                     shiftX(-ServerGame.GameSettings.WALK_SPEED);
-                    break;
                 }
-
-                case RIGHT_WALK: {
+                case RIGHT_WALK -> {
                     setHorDirection(HorDirection.RIGHT);
                     shiftX(ServerGame.GameSettings.WALK_SPEED);
-                    break;
                 }
-
-                default:
-                    ServerGame.getLogger().warning("Unknown action \"" + action + "\" in long actions.");
-                    break;
+                default -> ServerGame.getLogger().warning("Unknown action \"" + action + "\" in long actions.");
             }
         }
 
@@ -109,7 +105,17 @@ public class PlayerEntity extends ServerGame.Entity implements HorDirectionedEnt
 
     public void switchWeapon() {
         getGame().removeEntity(weaponEntity.getId());
-        weaponEntity = weaponEntity instanceof PistolEntity ? new CannonEntity(this) : new PistolEntity(this);
+
+        if (weaponEntity instanceof PistolEntity) {
+
+            weaponEntity = new CannonEntity(this);
+
+        } else if (weaponEntity instanceof CannonEntity) {
+
+            weaponEntity = new MolotovCocktailEntity(this);
+        } else {
+            weaponEntity = new PistolEntity(this);
+        }
     }
 
     @Override
@@ -132,12 +138,14 @@ public class PlayerEntity extends ServerGame.Entity implements HorDirectionedEnt
                 this.setY(otherEntity.getY() + otherEntity.getHeight());
                 this.setYVel(0);
             }
-        } else if (otherEntity instanceof ProjectileEntity) {
+        } else if (otherEntity instanceof ProjectileEntity || otherEntity instanceof FireEntity) {
             die();
         }
     }
 
     private void die() {
         getGame().removeEntity(getId());
+        getGame().removeEntity(this.weaponEntity.getId());
+//        getGame().removeEntity(this.);
     }
 }
